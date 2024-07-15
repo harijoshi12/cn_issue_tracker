@@ -1,0 +1,58 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  background-color: #1e1e1e;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.form-control,
+.form-select {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #ffffff;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: #333;
+  border-color: #666;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+#labelSuggestions {
+  position: absolute;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.label-suggestion {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.label-suggestion:hover {
+  background-color: #333;
+}

@@ -1,25 +1,53 @@
 // src/controllers/issueController.js
 
 import Issue from "../models/Issue.js";
+import Project from "../models/Project.js";
+import Label from "../models/Label.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 /**
+ * Get create issue page
+ * @route GET /issues/create/:projectId
+ * @access Public
+ */
+export const getCreateIssuePage = asyncHandler(async (req, res) => {
+  const project = await Project.findById(req.params.projectId);
+  if (!project) {
+    return res.status(404).render("error", { message: "Project not found" });
+  }
+  res.render("issues/create", { project });
+});
+
+/**
  * Create a new issue
- * @route POST /api/issues
+ * @route POST /issues
  * @access Public
  */
 export const createIssue = asyncHandler(async (req, res) => {
   const { title, description, author, project, labels } = req.body;
+
+  // Process labels
+  const labelArray = labels.split(",").map((label) => label.trim());
+  const labelIds = await Promise.all(
+    labelArray.map(async (labelName) => {
+      let label = await Label.findOne({ name: labelName });
+      if (!label) {
+        label = await Label.create({ name: labelName });
+      }
+      return label._id;
+    })
+  );
 
   const issue = await Issue.create({
     title,
     description,
     author,
     project,
-    labels,
+    labels: labelIds,
   });
 
-  res.success(201, "Issue created successfully", issue);
+  req.flash("success_msg", "Issue created successfully");
+  res.redirect(`/projects/${project}`);
 });
 
 /**

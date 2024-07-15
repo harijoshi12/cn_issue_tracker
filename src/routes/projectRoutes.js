@@ -1,49 +1,18 @@
-// src/routes/projectRoutes.js
-
 import express from "express";
-import {
-  createProject,
-  getAllProjects,
-  getProjectById,
-  updateProject,
-  deleteProject,
-} from "../controllers/projectController.js";
+import * as projectController from "../controllers/projectController.js";
 
 const router = express.Router();
 
-/**
- * @route   POST /api/projects
- * @desc    Create a new project
- * @access  Public
- */
-router.post("/", createProject);
+// Get all projects
+router.get("/", projectController.getAllProjects);
 
-/**
- * @route   GET /api/projects
- * @desc    Get all projects
- * @access  Public
- */
-router.get("/", getAllProjects);
+// Get create project page
+router.get("/create", projectController.getCreateProjectPage);
 
-/**
- * @route   GET /api/projects/:id
- * @desc    Get a single project by ID
- * @access  Public
- */
-router.get("/:id", getProjectById);
+// Create a new project
+router.post("/", projectController.createProject);
 
-/**
- * @route   PUT /api/projects/:id
- * @desc    Update a project
- * @access  Public
- */
-router.put("/:id", updateProject);
-
-/**
- * @route   DELETE /api/projects/:id
- * @desc    Delete a project
- * @access  Public
- */
-router.delete("/:id", deleteProject);
+// Get project details
+router.get("/:id", projectController.getProjectDetails);
 
 export default router;

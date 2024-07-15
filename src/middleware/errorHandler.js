@@ -1,5 +1,3 @@
-// src/middleware/errorHandler.js
-
 /**
  * Global error handling middleware
  * @param {Error} err - The error object
@@ -16,7 +14,22 @@ const errorHandler = (err, req, res, next) => {
     console.error(err);
   }
 
-  res.error(statusCode, message, err.errors);
+  if (req.xhr || req.headers.accept.indexOf("json") > -1) {
+    // Send JSON response for API requests
+    res.status(statusCode).json({
+      success: false,
+      message,
+      errors: err.errors || {},
+    });
+  } else {
+    // Render error page for non-API requests
+    res.status(statusCode).render("error", {
+      title: "Error",
+      message,
+      errors: err.errors || {},
+      messages: req.flash(),
+    });
+  }
 };
 
 export default errorHandler;

@@ -1,0 +1,25 @@
+<h1 class="mb-4"><i class="bi bi-kanban"></i> Projects</h1>
+<a href="/projects/create" class="btn btn-primary mb-3"
+  ><i class="bi bi-plus-circle"></i> Create New Project</a
+>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  <% projects.forEach(project => { %>
+  <div class="col">
+    <div class="card bg-secondary text-light h-100">
+      <div class="card-body">
+        <h5 class="card-title"><%= project.name %></h5>
+        <p class="card-text"><%= project.description.substring(0, 100) %>...</p>
+        <p class="card-text">
+          <small class="text-light">Author: <%= project.author %></small>
+        </p>
+      </div>
+      <div class="card-footer">
+        <a href="/projects/<%= project._id %>" class="btn btn-primary btn-sm"
+          >View Details</a
+        >
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>

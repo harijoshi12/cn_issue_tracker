@@ -1,83 +1,60 @@
-// src/controllers/projectController.js
-
 import Project from "../models/Project.js";
-import asyncHandler from "../utils/asyncHandler.js";
-
-/**
- * Create a new project
- * @route POST /api/projects
- * @access Public
- */
-export const createProject = asyncHandler(async (req, res) => {
-  const { name, description, author } = req.body;
-
-  const project = await Project.create({
-    name,
-    description,
-    author,
-  });
-
-  res.success(201, "Project created successfully", project);
-});
+import Issue from "../models/Issue.js";
 
 /**
  * Get all projects
- * @route GET /api/projects
- * @access Public
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
  */
-export const getAllProjects = asyncHandler(async (req, res) => {
-  const projects = await Project.find();
-
-  res.success(200, "Projects retrieved successfully", projects);
-});
+export const getAllProjects = async (req, res) => {
+  try {
+    const projects = await Project.find();
+    res.render("projects/index", { title: "Projects", projects });
+  } catch (error) {
+    req.flash("error_msg", "Failed to fetch projects");
+    res.redirect("/");
+  }
+};
 
 /**
- * Get a single project by ID
- * @route GET /api/projects/:id
- * @access Public
+ * Get create project page
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
  */
-export const getProjectById = asyncHandler(async (req, res) => {
-  const project = await Project.findById(req.params.id);
-
-  if (!project) {
-    return res.error(404, "Project not found");
-  }
-
-  res.success(200, "Project retrieved successfully", project);
-});
+export const getCreateProjectPage = (req, res) => {
+  res.render("projects/create", { title: "Create Project" });
+};
 
 /**
- * Update a project
- * @route PUT /api/projects/:id
- * @access Public
+ * Create a new project
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
  */
-export const updateProject = asyncHandler(async (req, res) => {
-  const { name, description, author } = req.body;
-
-  const project = await Project.findByIdAndUpdate(
-    req.params.id,
-    { name, description, author },
-    { new: true, runValidators: true }
-  );
-
-  if (!project) {
-    return res.error(404, "Project not found");
+export const createProject = async (req, res) => {
+  try {
+    await Project.create(req.body);
+    req.flash("success_msg", "Project created successfully");
+    res.redirect("/projects");
+  } catch (error) {
+    req.flash("error_msg", "Failed to create project");
+    res.redirect("/projects/create");
   }
-
-  res.success(200, "Project updated successfully", project);
-});
+};
 
 /**
- * Delete a project
- * @route DELETE /api/projects/:id
- * @access Public
+ * Get project details
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
  */
-export const deleteProject = asyncHandler(async (req, res) => {
-  const project = await Project.findByIdAndDelete(req.params.id);
-
-  if (!project) {
-    return res.error(404, "Project not found");
+export const getProjectDetails = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id);
+    const issues = await Issue.find({ project: req.params.id }).populate(
+      "labels"
+    );
+    res.render("projects/detail", { title: project.name, project, issues });
+  } catch (error) {
+    req.flash("error_msg", "Project not found");
+    res.redirect("/projects");
   }
-
-  res.success(200, "Project deleted successfully");
-});
+};

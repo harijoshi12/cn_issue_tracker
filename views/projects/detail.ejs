@@ -1,0 +1,62 @@
+<h1 class="mb-4"><%= project.name %></h1>
+<p><%= project.description %></p>
+<p><strong>Author:</strong> <%= project.author %></p>
+
+<h2 class="mt-5 mb-3"><i class="bi bi-bug"></i> Issues</h2>
+<a href="/issues/create/<%= project._id %>" class="btn btn-primary mb-3"
+  ><i class="bi bi-plus-circle"></i> Create New Issue</a
+>
+
+<div class="card bg-secondary text-light mb-4">
+  <div class="card-body">
+    <h5 class="card-title">Filters</h5>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label for="authorFilter" class="form-label">Filter by Author:</label>
+        <input
+          type="text"
+          class="form-control bg-dark text-light"
+          id="authorFilter" />
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="labelFilter" class="form-label">Filter by Labels:</label>
+        <select
+          id="labelFilter"
+          class="form-select bg-dark text-light"
+          multiple>
+          <% const uniqueLabels = [...new Set(issues.flatMap(issue =>
+          issue.labels.map(label => label.name)))]; %> <%
+          uniqueLabels.forEach(label => { %>
+          <option value="<%= label %>"><%= label %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="search" class="form-label">Search:</label>
+        <input
+          type="text"
+          class="form-control bg-dark text-light"
+          id="search" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="issueList">
+  <% issues.forEach(issue => { %>
+  <div class="card bg-secondary text-light mb-3">
+    <div class="card-body">
+      <h5 class="card-title"><%= issue.title %></h5>
+      <p class="card-text"><%= issue.description %></p>
+      <p class="card-text">
+        <small class="text-light">Author: <%= issue.author %></small>
+      </p>
+      <p class="card-text">
+        <% issue.labels.forEach(label => { %>
+        <span class="badge bg-primary me-1"><%= label.name %></span>
+        <% }) %>
+      </p>
+    </div>
+  </div>
+  <% }) %>
+</div>
