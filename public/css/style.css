@@ -1,7 +1,15 @@
+/* public/css/style.css */
 body {
   font-family: "Arial", sans-serif;
   background-color: #121212;
   color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 .navbar {
@@ -39,6 +47,7 @@ body {
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
+/* Label input system styles */
 #labelSuggestions {
   position: absolute;
   background-color: #2a2a2a;
@@ -46,6 +55,7 @@ body {
   max-height: 150px;
   overflow-y: auto;
   z-index: 1000;
+  width: calc(100% - 70px);
 }
 
 .label-suggestion {
@@ -54,5 +64,199 @@ body {
 }
 
 .label-suggestion:hover {
-  background-color: #333;
+  background-color: #444;
+}
+
+#labelList .badge {
+  font-size: 0.9em;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+  display: inline-block;
+}
+
+#labelList .badge i {
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+#labelList .badge i:hover {
+  color: #ff6b6b;
+}
+
+.input-group .btn {
+  z-index: 0;
+}
+
+/* Footer styles */
+.footer {
+  flex-shrink: 0;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  padding: 1rem 0;
+  margin-top: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #labelSuggestions {
+    width: 100%;
+  }
+}
+
+/* Additional utility classes */
+.bg-dark-custom {
+  background-color: #1e1e1e;
+}
+
+.text-light-custom {
+  color: #e0e0e0;
+}
+
+/* Improve form readability */
+.form-label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+/* Enhance card appearance */
+.card {
+  margin-bottom: 1rem;
+}
+
+.card-header {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #444;
+}
+
+.card-footer {
+  background-color: #2a2a2a;
+  border-top: 1px solid #444;
+}
+
+/* Improve button styles */
+.btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-outline-light {
+  color: #f8f9fa;
+  border-color: #f8f9fa;
+}
+
+.btn-outline-light:hover {
+  color: #212529;
+  background-color: #f8f9fa;
+  border-color: #f8f9fa;
+}
+.project-header {
+  margin-bottom: 2rem;
+}
+
+.issue-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-bar {
+  flex-grow: 1;
+  margin-right: 1rem;
+}
+
+.filters {
+  display: flex;
+}
+
+.filters select {
+  margin-left: 0.5rem;
+}
+
+#authorFilter,
+#labelFilter {
+  min-width: 120px;
+}
+
+.issues-section h2 {
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+#issueList .card {
+  transition: all 0.3s ease;
+}
+
+#issueList .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .issue-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filters select {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+}
+.dropdown-menu {
+  background-color: #343a40;
+  border-color: #495057;
+}
+
+.dropdown-item {
+  color: #f8f9fa;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: #495057;
+  color: #fff;
+}
+
+.dropdown-item input[type="radio"],
+.dropdown-item input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.input-group-text {
+  border-color: #495057;
+}
+
+.filters .dropdown {
+  margin-right: 0.5rem;
+}
+
+.filters .btn-secondary {
+  background-color: #495057;
+  border-color: #495057;
+}
+
+.filters .btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+.dropdown-item input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto;
 }

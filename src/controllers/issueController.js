@@ -1,5 +1,3 @@
-// src/controllers/issueController.js
-
 import Issue from "../models/Issue.js";
 import Project from "../models/Project.js";
 import Label from "../models/Label.js";
@@ -13,9 +11,12 @@ import asyncHandler from "../utils/asyncHandler.js";
 export const getCreateIssuePage = asyncHandler(async (req, res) => {
   const project = await Project.findById(req.params.projectId);
   if (!project) {
-    return res.status(404).render("error", { message: "Project not found" });
+    req.flash("error_msg", "Project not found");
+    return res
+      .status(404)
+      .render("error", { title: "Not Found", message: "Project not found" });
   }
-  res.render("issues/create", { project });
+  res.render("issues/create", { title: "Create New Issue", project });
 });
 
 /**
@@ -57,7 +58,6 @@ export const createIssue = asyncHandler(async (req, res) => {
  */
 export const getAllIssues = asyncHandler(async (req, res) => {
   const issues = await Issue.find().populate("project").populate("labels");
-
   res.success(200, "Issues retrieved successfully", issues);
 });
 
@@ -114,4 +114,15 @@ export const deleteIssue = asyncHandler(async (req, res) => {
   }
 
   res.success(200, "Issue deleted successfully");
+});
+
+/**
+ * Suggest labels
+ * @route GET /api/labels/suggest
+ * @access Public
+ */
+export const suggestLabels = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  const labels = await Label.find({ name: new RegExp(q, "i") }).limit(5);
+  res.json(labels);
 });

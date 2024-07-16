@@ -1,45 +1,75 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Filter issues in project detail page
-  const authorFilter = document.getElementById("authorFilter");
-  const labelFilter = document.getElementById("labelFilter");
-  const search = document.getElementById("search");
+  const searchInput = document.getElementById("search");
+  const authorFilters = document.querySelectorAll('input[name="authorFilter"]');
+  const labelFilters = document.querySelectorAll('input[name="labelFilter"]');
   const issueList = document.getElementById("issueList");
 
-  if (authorFilter && labelFilter && search && issueList) {
-    function filterIssues() {
-      const authorValue = authorFilter.value.toLowerCase();
-      const labelValues = Array.from(labelFilter.selectedOptions).map(
-        (option) => option.value.toLowerCase()
+  function filterIssues() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedAuthors = Array.from(authorFilters)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value.toLowerCase());
+    const selectedLabels = Array.from(labelFilters)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value.toLowerCase());
+
+    Array.from(issueList.children).forEach((issue) => {
+      const title = issue
+        .querySelector(".card-title")
+        .textContent.toLowerCase();
+      const description = issue
+        .querySelector(".card-text")
+        .textContent.toLowerCase();
+      const author = issue
+        .querySelector("small")
+        .textContent.toLowerCase()
+        .replace("author: ", "");
+      const labels = Array.from(issue.querySelectorAll(".badge")).map((badge) =>
+        badge.textContent.toLowerCase()
       );
-      const searchValue = search.value.toLowerCase();
 
-      Array.from(issueList.children).forEach((issue) => {
-        const title = issue
-          .querySelector(".card-title")
-          .textContent.toLowerCase();
-        const description = issue
-          .querySelector(".card-text")
-          .textContent.toLowerCase();
-        const author = issue.querySelector("small").textContent.toLowerCase();
-        const labels = Array.from(issue.querySelectorAll(".badge")).map(
-          (badge) => badge.textContent.toLowerCase()
-        );
+      const matchesSearch =
+        title.includes(searchTerm) || description.includes(searchTerm);
+      const matchesAuthor =
+        selectedAuthors.length === 0 || selectedAuthors.includes(author);
+      const matchesLabels =
+        selectedLabels.length === 0 ||
+        selectedLabels.every((label) => labels.includes(label));
 
-        const authorMatch = author.includes(authorValue);
-        const labelMatch =
-          labelValues.length === 0 ||
-          labelValues.every((value) => labels.includes(value));
-        const searchMatch =
-          title.includes(searchValue) || description.includes(searchValue);
+      issue.style.display =
+        matchesSearch && matchesAuthor && matchesLabels ? "" : "none";
+    });
+  }
 
-        issue.style.display =
-          authorMatch && labelMatch && searchMatch ? "" : "none";
-      });
+  searchInput.addEventListener("input", filterIssues);
+  authorFilters.forEach((checkbox) =>
+    checkbox.addEventListener("change", function () {
+      updateFilterButtonText("author");
+      filterIssues();
+    })
+  );
+  labelFilters.forEach((checkbox) =>
+    checkbox.addEventListener("change", function () {
+      updateFilterButtonText("label");
+      filterIssues();
+    })
+  );
+
+  // Update button text when selections change
+  function updateFilterButtonText(filterName) {
+    const btn = document.getElementById(`${filterName}FilterBtn`);
+    const filters = document.querySelectorAll(
+      `input[name="${filterName}Filter"]:checked`
+    );
+    if (filters.length === 0) {
+      btn.textContent =
+        filterName.charAt(0).toUpperCase() + filterName.slice(1);
+    } else if (filters.length === 1) {
+      btn.textContent = filters[0].value;
+    } else {
+      btn.textContent = `${filters.length} ${filterName}s`;
     }
-
-    authorFilter.addEventListener("input", filterIssues);
-    labelFilter.addEventListener("change", filterIssues);
-    search.addEventListener("input", filterIssues);
   }
 
   // Label suggestions in create issue page

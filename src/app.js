@@ -5,6 +5,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import session from "express-session";
 import flash from "connect-flash";
+import expressLayouts from "express-ejs-layouts";
 
 import connectDB from "./config/database.js";
 import projectRoutes from "./routes/projectRoutes.js";
@@ -21,12 +22,16 @@ const __dirname = path.dirname(__filename);
 // Initialize express app
 const app = express();
 
-// Connect to MongoDB
+// Connect to database
 connectDB();
 
 // View engine setup
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "..", "views"));
+
+// EJS Layouts middleware
+app.use(expressLayouts);
+app.set("layout", "layouts/main");
 
 // Middleware
 app.use(morgan("dev"));
@@ -78,12 +83,6 @@ app.use((err, req, res, next) => {
     title: "Server Error",
     message: "Something went wrong on our end.",
   });
-});
-
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
 });
 
 export default app;

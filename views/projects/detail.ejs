@@ -1,62 +1,94 @@
-<h1 class="mb-4"><%= project.name %></h1>
-<p><%= project.description %></p>
-<p><strong>Author:</strong> <%= project.author %></p>
+<!-- views/projects/detail.ejs -->
+<div class="project-header">
+  <h1 class="mb-2"><%= project.name %></h1>
+  <p class="mb-2"><%= project.description %></p>
+  <p><strong>Author:</strong> <%= project.author %></p>
+</div>
 
-<h2 class="mt-5 mb-3"><i class="bi bi-bug"></i> Issues</h2>
-<a href="/issues/create/<%= project._id %>" class="btn btn-primary mb-3"
-  ><i class="bi bi-plus-circle"></i> Create New Issue</a
->
-
-<div class="card bg-secondary text-light mb-4">
-  <div class="card-body">
-    <h5 class="card-title">Filters</h5>
-    <div class="row">
-      <div class="col-md-4 mb-3">
-        <label for="authorFilter" class="form-label">Filter by Author:</label>
-        <input
-          type="text"
-          class="form-control bg-dark text-light"
-          id="authorFilter" />
-      </div>
-      <div class="col-md-4 mb-3">
-        <label for="labelFilter" class="form-label">Filter by Labels:</label>
-        <select
-          id="labelFilter"
-          class="form-select bg-dark text-light"
-          multiple>
-          <% const uniqueLabels = [...new Set(issues.flatMap(issue =>
-          issue.labels.map(label => label.name)))]; %> <%
-          uniqueLabels.forEach(label => { %>
-          <option value="<%= label %>"><%= label %></option>
-          <% }); %>
-        </select>
-      </div>
-      <div class="col-md-4 mb-3">
-        <label for="search" class="form-label">Search:</label>
-        <input
-          type="text"
-          class="form-control bg-dark text-light"
-          id="search" />
-      </div>
+<div class="issue-controls mb-4">
+  <div class="search-bar">
+    <div class="input-group">
+      <span class="input-group-text bg-dark text-light">
+        <i class="bi bi-search"></i>
+      </span>
+      <input
+        type="text"
+        id="search"
+        class="form-control bg-dark text-light"
+        placeholder="Search issues" />
+    </div>
+  </div>
+  <div class="filters">
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="authorFilterBtn"
+        data-bs-toggle="dropdown"
+        aria-expanded="false">
+        Author
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="authorFilterBtn">
+        <li><hr class="dropdown-divider" /></li>
+        <% const uniqueAuthors = [...new Set(issues.map(issue =>
+        issue.author))]; %> <% uniqueAuthors.forEach(author => { %>
+        <li>
+          <label class="dropdown-item">
+            <input type="checkbox" name="authorFilter" value="<%= author %>" />
+            <%= author %>
+          </label>
+        </li>
+        <% }); %>
+      </ul>
+    </div>
+    <div class="dropdown">
+      <button
+        class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="labelFilterBtn"
+        data-bs-toggle="dropdown"
+        aria-expanded="false">
+        Labels
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="labelFilterBtn">
+        <li><hr class="dropdown-divider" /></li>
+        <% const uniqueLabels = [...new Set(issues.flatMap(issue =>
+        issue.labels.map(label => label.name)))]; %> <%
+        uniqueLabels.forEach(label => { %>
+        <li>
+          <label class="dropdown-item">
+            <input type="checkbox" name="labelFilter" value="<%= label %>" />
+            <%= label %>
+          </label>
+        </li>
+        <% }); %>
+      </ul>
     </div>
   </div>
 </div>
 
-<div id="issueList">
-  <% issues.forEach(issue => { %>
-  <div class="card bg-secondary text-light mb-3">
-    <div class="card-body">
-      <h5 class="card-title"><%= issue.title %></h5>
-      <p class="card-text"><%= issue.description %></p>
-      <p class="card-text">
-        <small class="text-light">Author: <%= issue.author %></small>
-      </p>
-      <p class="card-text">
-        <% issue.labels.forEach(label => { %>
-        <span class="badge bg-primary me-1"><%= label.name %></span>
-        <% }) %>
-      </p>
+<div class="issues-section">
+  <h2 class="mb-3">Issues</h2>
+  <a href="/issues/create/<%= project._id %>" class="btn btn-primary mb-3">
+    <i class="bi bi-plus-circle"></i> Create New Issue
+  </a>
+
+  <div id="issueList">
+    <% issues.forEach(issue => { %>
+    <div class="card bg-secondary text-light mb-3">
+      <div class="card-body">
+        <h5 class="card-title"><%= issue.title %></h5>
+        <p class="card-text"><%= issue.description %></p>
+        <p class="card-text">
+          <small class="text-light">Author: <%= issue.author %></small>
+        </p>
+        <p class="card-text">
+          <% issue.labels.forEach(label => { %>
+          <span class="badge bg-primary me-1"><%= label.name %></span>
+          <% }); %>
+        </p>
+      </div>
     </div>
+    <% }); %>
   </div>
-  <% }) %>
 </div>

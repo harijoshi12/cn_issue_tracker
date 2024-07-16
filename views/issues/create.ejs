@@ -1,10 +1,11 @@
+<!-- views/issues/create.ejs -->
 <h1 class="mb-4">
   <i class="bi bi-plus-circle"></i> Create New Issue for <%= project.name %>
 </h1>
 
 <div class="card bg-secondary text-light">
   <div class="card-body">
-    <form action="/issues" method="POST">
+    <form action="/issues" method="POST" id="issueForm">
       <input type="hidden" name="project" value="<%= project._id %>" />
       <div class="mb-3">
         <label for="title" class="form-label">Title:</label>
@@ -34,13 +35,20 @@
           required />
       </div>
       <div class="mb-3">
-        <label for="labels" class="form-label">Labels:</label>
-        <input
-          type="text"
-          class="form-control bg-dark text-light"
-          id="labels"
-          name="labels" />
+        <label for="labelInput" class="form-label">Labels:</label>
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control bg-dark text-light"
+            id="labelInput"
+            placeholder="Enter a label" />
+          <button class="btn btn-outline-light" type="button" id="addLabelBtn">
+            Add
+          </button>
+        </div>
         <div id="labelSuggestions" class="mt-2"></div>
+        <div id="labelList" class="mt-2"></div>
+        <input type="hidden" name="labels" id="labelsInput" />
       </div>
       <button type="submit" class="btn btn-primary">
         <i class="bi bi-check-circle"></i> Create Issue
@@ -48,3 +56,110 @@
     </form>
   </div>
 </div>
+
+<script>
+  const labelInput = document.getElementById("labelInput");
+  const addLabelBtn = document.getElementById("addLabelBtn");
+  const labelSuggestions = document.getElementById("labelSuggestions");
+  const labelList = document.getElementById("labelList");
+  const labelsInput = document.getElementById("labelsInput");
+  const issueForm = document.getElementById("issueForm");
+
+  let labels = [];
+
+  function updateLabels() {
+    labelList.innerHTML = "";
+    labels.forEach((label, index) => {
+      const labelElement = document.createElement("span");
+      labelElement.classList.add("badge", "bg-primary", "me-2", "mb-2");
+      labelElement.innerHTML = `${label} <i class="bi bi-x-circle" onclick="removeLabel(${index})"></i>`;
+      labelList.appendChild(labelElement);
+    });
+    labelsInput.value = labels.join(",");
+  }
+
+  function addLabel(label) {
+    if (label && !labels.includes(label)) {
+      labels.push(label);
+      updateLabels();
+      labelInput.value = "";
+      labelSuggestions.innerHTML = "";
+    }
+  }
+
+  function removeLabel(index) {
+    labels.splice(index, 1);
+    updateLabels();
+  }
+
+  addLabelBtn.addEventListener("click", () => {
+    addLabel(labelInput.value.trim());
+    labelInput.focus();
+  });
+
+  labelInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addLabel(labelInput.value.trim());
+    }
+  });
+
+  // Debounce function
+  function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+  }
+
+  // Debounced function for fetching label suggestions
+  const debouncedFetchSuggestions = debounce(function (input) {
+    if (input) {
+      fetch(`/api/labels/suggest?q=${input}`)
+        .then((response) => response.json())
+        .then((suggestions) => {
+          labelSuggestions.innerHTML = "";
+          suggestions.forEach((label) => {
+            if (!labels.includes(label.name)) {
+              const div = document.createElement("div");
+              div.textContent = label.name;
+              div.classList.add("label-suggestion");
+              div.addEventListener("click", function () {
+                addLabel(label.name);
+                labelSuggestions.innerHTML = "";
+                labelInput.focus();
+              });
+              labelSuggestions.appendChild(div);
+            }
+          });
+        });
+    } else {
+      labelSuggestions.innerHTML = "";
+    }
+  }, 300); // 300ms delay
+
+  labelInput.addEventListener("input", function () {
+    const input = this.value.toLowerCase();
+    debouncedFetchSuggestions(input);
+  });
+
+  document.addEventListener("click", function (e) {
+    if (
+      e.target !== labelInput &&
+      e.target !== addLabelBtn &&
+      !labelSuggestions.contains(e.target)
+    ) {
+      labelSuggestions.innerHTML = "";
+    }
+  });
+
+  issueForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (labels.length === 0) {
+      alert("Please add at least one label.");
+      return;
+    }
+    this.submit();
+  });
+</script>
